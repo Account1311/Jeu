@@ -19,7 +19,15 @@ vaisseau_h = 8
 # initialisation des tirs
 tirs_liste = []
 
+# initialisation des ennemis
 ennemis_liste = []
+
+# initialisation des explosions
+explosions_liste = []
+
+#variable vies
+vies = 4
+
 
 
 
@@ -81,8 +89,41 @@ def ennemis_suppression():
             if e_x < tir_x + 4 and e_x + 8 >= tir_x and e_y < tir_y + 6 and e_y + 7 >= tir_y:
                 to_remove.append(ennemi)  # Ajoute l'ennemi à supprimer
                 tirs_liste.remove(tir) # suppression de la liste
+                explosions_liste.append([ennemi[0], ennemi[1], 0])  # Ajout de l'explosion directement dans la liste
     for ennemi in to_remove:
         ennemis_liste.remove(ennemi)  # Suppression des ennemis après la boucle
+
+        
+
+
+def explosions_creation(x, y):
+    """explosions aux points de collision entre deux objets"""
+    explosions_liste.append([x, y, 0])
+
+def explosions_animation():
+    """animation des explosions"""
+    for explosion in explosions_liste:
+        explosion[2] +=1
+        if explosion[2] == 12:
+            explosions_liste.remove(explosion) 
+
+def suppression_vaisseau():
+   for ennemi in ennemis_liste:
+       if ennemi[0] < vaisseau_x + 8 and ennemi[1] < vaisseau_y + 7 and ennemi[0] + 8 > vaisseau_x and ennemi[1] + 7 > vaisseau_y:
+           ennemis_liste.remove(ennemi)
+           explosions_liste.append([vaisseau_x, vaisseau_y, 0])
+           vies -= 1
+           
+           
+    
+
+
+
+
+
+
+
+
 
 
 
@@ -94,7 +135,7 @@ pyxel.load("images.pyxres")
 def update():
     """mise à jour des variables (30 fois par seconde)"""
 
-    global vaisseau_x, vaisseau_y, vaisseau_l, vaisseau_h, tirs_liste, ennemis_liste
+    global vaisseau_x, vaisseau_y, vaisseau_l, vaisseau_h, tirs_liste, ennemis_liste, vies
     
     vaisseau_x, vaisseau_y = vaisseau_deplacement(vaisseau_x, vaisseau_y)
 
@@ -114,8 +155,18 @@ def update():
 
     #suppression des ennemis si contact avec tir
     ennemis_suppression()
-
-
+    
+    #animation des explosions si contact 
+    explosions_animation()
+    
+    #suppression du vaisseau si contact avec les ennemis
+    suppression_vaisseau()
+    
+    
+    
+    
+    
+    
 # =========================================================
 # == DRAW
 # =========================================================
@@ -124,6 +175,13 @@ def draw():
 
     # vide la fenetre
     pyxel.cls(0)
+    
+    
+    if vies > 0:
+        # affichage des vies
+        pyxel.text(5, 5, 'VIES:' + str(vies), 7)
+
+    
     
 # tirs
     for tir in tirs_liste: # je boucle sur ma liste de tirs
@@ -136,9 +194,14 @@ def draw():
     else:
         pyxel.blt(vaisseau_x, vaisseau_y, 0, 8, 0, vaisseau_l, vaisseau_h)
 
- # ennemis
+# ennemis
     for ennemi in ennemis_liste: # je boucle sur ma liste d’ennemis
         pyxel.blt(ennemi[0], ennemi[1], 0, 0, 9, 8, 7)
+
+# explosions (cercles de plus en plus grands)
+    for explosion in explosions_liste:
+        pyxel.circb(explosion[0]+4, explosion[1]+4, 2*(explosion[2]//4), 8+explosion[2]%3)            
+
 
 
 # lance le programme principal
