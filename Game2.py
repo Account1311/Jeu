@@ -16,6 +16,7 @@ vaisseau_y = 60
 vaisseau_l = 8
 vaisseau_h = 8
 
+
 # initialisation des tirs
 tirs_liste = []
 
@@ -127,7 +128,7 @@ def suppression_vaisseau():
 
 
 
-pyxel.load("images.pyxres")
+pyxel.load("images2.pyxres")
 
 # =========================================================
 # == UPDATE
@@ -135,7 +136,7 @@ pyxel.load("images.pyxres")
 def update():
     """mise à jour des variables (30 fois par seconde)"""
 
-    global vaisseau_x, vaisseau_y, vaisseau_l, vaisseau_h, tirs_liste, ennemis_liste, vies
+    global vaisseau_x, vaisseau_y, vaisseau_l, vaisseau_h, tirs_liste, ennemis_liste, vies, explosions_liste
     
     vaisseau_x, vaisseau_y = vaisseau_deplacement(vaisseau_x, vaisseau_y)
 
